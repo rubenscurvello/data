@@ -40,7 +40,7 @@ class CSV {
         });
     }
     async write(path, data) {
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
             const buffer = fs.createWriteStream(path);
             const stream = csv.format({
                 delimiter: ",",
@@ -50,12 +50,12 @@ class CSV {
                 quoteHeaders: true,
                 writeHeaders: true,
             });
-            buffer.on("end", resolve);
             stream.pipe(buffer);
             for (const entity of data) {
                 stream.write(entity);
             }
-            return stream.end();
+            stream.end();
+            resolve(true);
         });
     }
 }
