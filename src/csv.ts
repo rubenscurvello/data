@@ -26,7 +26,7 @@ class CSV {
   write(path: string, data: any) {
     const stream = csv.format({
       delimiter: ",",
-      escape: "\"",
+      escape: '"',
       headers: Object.keys(data[0]),
       quoteColumns: true,
       quoteHeaders: true,
@@ -41,3 +41,5 @@ class CSV {
     stream.end();
   }
 }
+
+export default CSV;
