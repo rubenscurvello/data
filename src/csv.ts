@@ -3,6 +3,12 @@ import * as fs from "fs";
 import { CsvOptionsInterface } from "types";
 
 class CSV {
+  /**
+   * 
+   * @param {string} path 
+   * @param {CsvOptionsInterface} options 
+   * @returns {Promise<any>}
+   */
   read(path: string, options: CsvOptionsInterface) {
     return new Promise((resolve): any => {
       let result: Array<string> = [];
@@ -23,16 +29,23 @@ class CSV {
     });
   }
 
-  async write(path: string, data: any) {
+  /**
+   * 
+   * @param {string} path 
+   * @param {array} data 
+   * @returns {Promise<void>}
+   */
+  async write(path: string, data: any[]) {
+    const isAppend = fs.existsSync(path);
     return new Promise((resolve): void => {
-      const buffer = fs.createWriteStream(path);
+      const buffer = fs.createWriteStream(path, { flags: 'a' });
 
       buffer.on('finish', resolve);
 
       const stream = csv.format({
         delimiter: ",",
         escape: '"',
-        headers: Object.keys(data[0]),
+        headers: isAppend ? false : Object.keys(data[0]),
         quoteColumns: true,
         quoteHeaders: true,
         writeHeaders: true,
