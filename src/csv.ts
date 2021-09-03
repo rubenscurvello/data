@@ -23,55 +23,21 @@ class CSV {
     });
   }
 
-  save(path: string, data: any) {
-    // const pathCsv = fs.createWriteStream(path);
-    const createCsv = csv.write(data);
+  write(path: string, data: any) {
+    const stream = csv.format({
+      delimiter: ",",
+      escape: "\"",
+      headers: Object.keys(data[0]),
+      quoteColumns: true,
+      quoteHeaders: true,
+      writeHeaders: true,
+    });
+    stream.pipe(fs.createWriteStream(path));
+
+    for (const entity of data) {
+      stream.write(entity);
+    }
+
+    stream.end();
   }
 }
-// const options = {
-//   skipRows: 0,
-//   maxRows: 100,
-//   delimiter: ';'
-// }
-
-// const file = fs.readFileSync(`./dto/estoque.json`).toString()
-// const json = JSON.parse(file)
-
-// const test = new CSV()
-// test.read('files/ESTOQUE.csv', options).then((resolve: any) => {
-//   const keysValues = Object.entries(json)
-//   const result = resolve.map((result: any) => {
-//     let dto: any = {}
-//     keysValues.map(([key, value]: any) => {
-//       dto[key] = result[value]
-//     })
-//     return dto
-//   })
-
-//   console.log(result)
-// })
-const json = [
-  {
-    title: "example glossary",
-    GlossDiv: {
-      title: "S",
-      GlossList: {
-        GlossEntry: {
-          ID: "SGML",
-          SortAs: "SGML",
-          GlossTerm: "Standard Generalized Markup Language",
-          Acronym: "SGML",
-          Abbrev: "ISO 8879:1986",
-          GlossDef: {
-            para: "A meta-markup language, used to create markup languages such as DocBook.",
-            GlossSeeAlso: ["GML", "XML"],
-          },
-          GlossSee: "markup",
-        },
-      },
-    },
-  },
-];
-const data = new CSV();
-const file = data.save("novo.csv", "novo.csv");
-export default CSV;
