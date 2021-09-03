@@ -12,8 +12,6 @@
     "types": "https://github.com/rubenscurvello/types.git"
   },
   "devDependencies": {
-    "@types/node": "^16.6.1",
-    "@types/shelljs": "^0.8.9",
-    "@types/ssh2-sftp-client": "^5.3.2"
+    "@types/node": "^16.6.1"
   }
 }
