@@ -48,3 +48,5 @@ class CSV {
     });
   }
 }
+
+export default CSV;
