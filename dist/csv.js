@@ -26,41 +26,32 @@ class CSV {
         return new Promise((resolve) => {
             let result = [];
             fs.createReadStream(path)
-                .on('error', (error) => {
+                .on("error", (error) => {
                 console.error(error);
             })
                 .pipe(csv.parse({
                 headers: true,
                 skipRows: options.skipRows,
                 maxRows: options.maxRows,
-                delimiter: options.delimiter
+                delimiter: options.delimiter,
             }))
-                .on('data', (row) => result.push(row))
-                .on('end', () => resolve(result));
+                .on("data", (row) => result.push(row))
+                .on("end", () => resolve(result));
         });
     }
     write(path, data) {
-        const pathCsv = fs.createWriteStream(path);
-        const createCsv = csv.write(data, { headers: true }).pipe(pathCsv);
+        const stream = csv.format({
+            delimiter: ",",
+            escape: "\"",
+            headers: Object.keys(data[0]),
+            quoteColumns: true,
+            quoteHeaders: true,
+            writeHeaders: true,
+        });
+        stream.pipe(fs.createWriteStream(path));
+        for (const entity of data) {
+            stream.write(entity);
+        }
+        stream.end();
     }
 }
-const options = {
-    skipRows: 0,
-    maxRows: 100,
-    delimiter: ';'
-};
-const file = fs.readFileSync(`./dto/estoque.json`).toString();
-const json = JSON.parse(file);
-const test = new CSV();
-test.read('files/ESTOQUE.csv', options).then((resolve) => {
-    const keysValues = Object.entries(json);
-    const result = resolve.map((result) => {
-        let dto = {};
-        keysValues.map(([key, value]) => {
-            dto[key] = result[value];
-        });
-        return dto;
-    });
-    console.log(result);
-});
-exports.default = CSV;
