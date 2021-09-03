@@ -23,21 +23,28 @@ class CSV {
     });
   }
 
-  write(path: string, data: any) {
-    const stream = csv.format({
-      delimiter: ",",
-      escape: "\"",
-      headers: Object.keys(data[0]),
-      quoteColumns: true,
-      quoteHeaders: true,
-      writeHeaders: true,
+  async write(path: string, data: any) {
+    return new Promise((resolve) => {
+      const buffer = fs.createWriteStream(path);
+
+      const stream = csv.format({
+        delimiter: ",",
+        escape: '"',
+        headers: Object.keys(data[0]),
+        quoteColumns: true,
+        quoteHeaders: true,
+        writeHeaders: true,
+      });
+
+      buffer.on("end", resolve);
+
+      stream.pipe(buffer);
+
+      for (const entity of data) {
+        stream.write(entity);
+      }
+
+      return stream.end();
     });
-    stream.pipe(fs.createWriteStream(path));
-
-    for (const entity of data) {
-      stream.write(entity);
-    }
-
-    stream.end();
   }
 }
